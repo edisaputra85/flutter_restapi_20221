@@ -1,7 +1,7 @@
 <?php
 	include 'conn.php';
 	
-	$queryResult = $connect->query("SELECT * FROM db_item");
+	$queryResult = $connect->query("SELECT * FROM tb_item");
 	$result = array();
 	while($fetchData = $queryResult->fetch_assoc()){
 		//print_r($fetchData);

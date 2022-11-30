@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_crud_mysql/main.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -22,76 +23,101 @@ class _DetailState extends State<Detail> {
     textControllerHargaBarang.text = dataBarang['price'].toString();
     textControllerStokBarang.text = dataBarang['stock'].toString();
     return Scaffold(
-        appBar: AppBar(title: Text("Halaman Detail")),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-                margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                child: TextFormField(
-                    controller: textControllerKodeBarang,
-                    decoration: InputDecoration(
-                      hintText: 'Kode Barang',
-                      labelText: 'Kode Barang',
-                      icon: Icon(Icons.numbers),
-                    ))),
-            Container(
-                margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                child: TextFormField(
-                    controller: textControllerNamaBarang,
-                    decoration: InputDecoration(
-                      hintText: 'Nama Barang',
-                      labelText: 'Nama Barang',
-                      icon: Icon(Icons.perm_identity),
-                    ))),
-            Container(
-                margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                child: TextFormField(
-                    controller: textControllerHargaBarang,
-                    decoration: InputDecoration(
-                      hintText: 'Harga Barang',
-                      labelText: 'Harga Barang',
-                      icon: Icon(Icons.perm_identity),
-                    ))),
-            Container(
-                margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                child: TextFormField(
-                    controller: textControllerStokBarang,
-                    decoration: InputDecoration(
-                      hintText: 'Stok Barang',
-                      labelText: 'Stok Barang',
-                      icon: Icon(Icons.perm_identity),
-                    ))),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                      child: ElevatedButton(
-                        child: Text("Ubah Data"),
-                        onPressed: () {},
-                      )),
-                  Container(
-                      margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                      child: ElevatedButton(
-                        child: Text("Hapus Data"),
-                        onPressed: () {
-                          hapusData(dataBarang['item_code'].toString());
-                        },
-                      )),
-                ],
-              ),
+      appBar: AppBar(title: Text("Halaman Detail")),
+      body: Column(
+        children: [
+          Text(dataBarang['item_name'] + " harga:" + dataBarang['price']),
+          Container(
+            margin: EdgeInsets.all(10),
+            child: TextFormField(
+              controller: textControllerKodeBarang,
+              decoration: InputDecoration(
+                  labelText: "Kode Barang",
+                  hintText: "inputkan kode barang",
+                  icon: Icon(Icons.code)),
             ),
-          ],
-
-          //Text(dataBarang['item_name'] + " harga:" + dataBarang['price']),
-        ));
+          ),
+          Container(
+            margin: EdgeInsets.all(10),
+            child: TextFormField(
+              controller: textControllerNamaBarang,
+              decoration: InputDecoration(
+                  labelText: "Nama Barang",
+                  hintText: "inputkan nama barang",
+                  icon: Icon(Icons.person)),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.all(10),
+            child: TextFormField(
+              controller: textControllerHargaBarang,
+              decoration: InputDecoration(
+                  labelText: "Harga Barang",
+                  hintText: "inputkan harga barang",
+                  icon: Icon(Icons.person)),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.all(10),
+            child: TextFormField(
+              controller: textControllerStokBarang,
+              decoration: InputDecoration(
+                  labelText: "Stok Barang",
+                  hintText: "inputkan stok barang",
+                  icon: Icon(Icons.person)),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                child: Text("Ubah Data"),
+                onPressed: () {
+                  dataBarang['item_code'] = textControllerKodeBarang.text;
+                  dataBarang['item_name'] = textControllerNamaBarang.text;
+                  dataBarang['price'] = textControllerHargaBarang.text;
+                  dataBarang['stock'] = textControllerStokBarang.text;
+                  editData(dataBarang);
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return Home();
+                  }), (r) {
+                    return false;
+                  });
+                },
+              ),
+              ElevatedButton(
+                child: Text("Hapus Data"),
+                onPressed: () {
+                  hapusData(dataBarang['item_code'].toString());
+                  //Navigator.pushNamed(context, '/main');
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return Home();
+                  }), (r) {
+                    return false;
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
-  void hapusData(String kodeBarang) async {
-    //final response =
-    //    await http.get(Uri.parse("http://10.0.2.2/my_store/delete.php"));
+  void hapusData(String item_code) async {
+    String sql = "http://10.0.2.2/my_store/delete.php?item_code=$item_code";
+    await http.get(Uri.parse(sql));
+  }
+
+  void editData(dynamic dataBarang) async {
+    String item_code = dataBarang['item_code'];
+    String item_name = dataBarang['item_name'];
+    String price = dataBarang['price'].toString();
+    String stock = dataBarang['stock'].toString();
+    String sql =
+        "http://10.0.2.2/my_store/edit.php?item_code=$item_code&item_name=$item_name&price=$price&stock=$stock";
+    await http.get(Uri.parse(sql));
   }
 }

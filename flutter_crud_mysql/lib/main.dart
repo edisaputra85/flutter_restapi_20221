@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_crud_mysql/add.dart';
 import 'package:flutter_crud_mysql/detail.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
           '/detail': (context) => Detail(
                 arguments: null,
               ),
+          '/add': (context) => Add(),
         });
   }
 }
@@ -55,23 +57,30 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("MY STORE"),
-        ),
-        body: FutureBuilder<List>(
-          future: getData(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const SizedBox.shrink(); //<---here
+      appBar: AppBar(
+        title: const Text("MY STORE"),
+      ),
+      body: FutureBuilder<List>(
+        future: getData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const SizedBox.shrink(); //<---here
+          } else {
+            if (snapshot.hasData) {
+              return ItemList(list: snapshot.data!);
             } else {
-              if (snapshot.hasData) {
-                return ItemList(list: snapshot.data!);
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
+              return const Center(child: CircularProgressIndicator());
             }
-          },
-        ));
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.pushNamed(context, '/add');
+        },
+      ),
+    );
   }
 }
 

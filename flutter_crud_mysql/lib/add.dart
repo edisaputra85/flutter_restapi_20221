@@ -3,30 +3,25 @@ import 'package:flutter_crud_mysql/main.dart';
 
 import 'package:http/http.dart' as http;
 
-class Detail extends StatefulWidget {
-  const Detail({super.key, required arguments});
+class Add extends StatefulWidget {
+  const Add({super.key});
 
   @override
-  State<Detail> createState() => _DetailState();
+  State<Add> createState() => _AddState();
 }
 
-class _DetailState extends State<Detail> {
+class _AddState extends State<Add> {
   TextEditingController textControllerKodeBarang = TextEditingController();
   TextEditingController textControllerNamaBarang = TextEditingController();
   TextEditingController textControllerHargaBarang = TextEditingController();
   TextEditingController textControllerStokBarang = TextEditingController();
+  dynamic dataBarang;
   @override
   Widget build(BuildContext context) {
-    dynamic dataBarang = ModalRoute.of(context)!.settings.arguments;
-    textControllerKodeBarang.text = dataBarang['item_code'].toString();
-    textControllerNamaBarang.text = dataBarang['item_name'].toString();
-    textControllerHargaBarang.text = dataBarang['price'].toString();
-    textControllerStokBarang.text = dataBarang['stock'].toString();
     return Scaffold(
-      appBar: AppBar(title: Text("Halaman Detail")),
+      appBar: AppBar(title: Text("Halaman Tambah Data")),
       body: Column(
         children: [
-          Text(dataBarang['item_name'] + " harga:" + dataBarang['price']),
           Container(
             margin: EdgeInsets.all(10),
             child: TextFormField(
@@ -71,27 +66,13 @@ class _DetailState extends State<Detail> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                child: Text("Ubah Data"),
+                child: Text("Simpan Data"),
                 onPressed: () {
-                  dataBarang['item_code'] = textControllerKodeBarang.text;
-                  dataBarang['item_name'] = textControllerNamaBarang.text;
-                  dataBarang['price'] = textControllerHargaBarang.text;
-                  dataBarang['stock'] = textControllerStokBarang.text;
-                  editData(dataBarang);
-                  Navigator.pushAndRemoveUntil(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return Home();
-                  }), (r) {
-                    return false;
-                  });
-                },
-              ),
-              ElevatedButton(
-                child: Text("Hapus Data"),
-                onPressed: () {
-                  hapusData(dataBarang['item_code'].toString());
-                  //Navigator.pushNamed(context, '/main');
-
+                  tambahData(
+                      textControllerKodeBarang.text,
+                      textControllerNamaBarang.text,
+                      textControllerHargaBarang.text,
+                      textControllerStokBarang.text);
                   Navigator.pushAndRemoveUntil(context,
                       MaterialPageRoute(builder: (BuildContext context) {
                     return Home();
@@ -107,18 +88,10 @@ class _DetailState extends State<Detail> {
     );
   }
 
-  void hapusData(String item_code) async {
-    String sql = "http://10.0.2.2/my_store/delete.php?item_code=$item_code";
-    await http.get(Uri.parse(sql));
-  }
-
-  void editData(dynamic dataBarang) async {
-    String item_code = dataBarang['item_code'];
-    String item_name = dataBarang['item_name'];
-    String price = dataBarang['price'].toString();
-    String stock = dataBarang['stock'].toString();
+  void tambahData(
+      String item_code, String item_name, String price, String stock) async {
     String sql =
-        "http://10.0.2.2/my_store/edit.php?item_code=$item_code&item_name=$item_name&price=$price&stock=$stock";
+        "http://10.0.2.2/my_store/add.php?item_code=$item_code&item_name=$item_name&price=$price&stock=$stock";
     await http.get(Uri.parse(sql));
   }
 }
